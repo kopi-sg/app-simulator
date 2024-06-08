@@ -18,3 +18,4 @@ jobs:
     with:
       os_version: "ubuntu-latest"
     secrets: inherit
+    needs: test
