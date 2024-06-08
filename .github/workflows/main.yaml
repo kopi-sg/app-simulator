@@ -16,5 +16,5 @@ jobs:
   maven-main:
     uses: kopi-sg/dso-workflow/.github/workflows/app-maven-release.yaml@main
     with:
-      os_version: "ubuntu-24.04"
+      os_version: "ubuntu-latest"
     secrets: inherit
