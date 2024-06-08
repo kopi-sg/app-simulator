@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: test
         run: |
-          echo "hello"
+          echo "hello 1"
 
   maven-main:
     uses: kopi-sg/dso-workflow/.github/workflows/app-maven-release.yaml@main
