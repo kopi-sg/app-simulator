@@ -2,8 +2,7 @@ name: maven
 on:
   push:
     branches:
-      - main
-      - dev/**
+      - test
 
 jobs:
   maven-main:
