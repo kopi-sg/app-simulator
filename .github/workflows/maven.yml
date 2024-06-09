@@ -19,7 +19,6 @@ jobs:
         with:
           java-version: 11
           distribution: "corretto"
-          cache: maven
 
       - name: Cache the Maven packages to speed up build
         uses: actions/cache@v2
@@ -40,7 +39,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Cache the Maven packages to speed up build
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -78,7 +77,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Cache the Maven packages to speed up build
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -112,7 +111,7 @@ jobs:
     needs: [scan]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: mvn -B package --file pom.xml -DskipTests
       - run: mkdir staging && cp target/*.jar staging
@@ -150,3 +149,7 @@ jobs:
         with:
           push: true
           tags: weihan1394/simulator:${{ env.DATE }}, weihan1394/simulator:latest
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
