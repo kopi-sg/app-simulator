@@ -42,12 +42,6 @@ jobs:
       - name: Test
         run: |
           mvn --batch-mode -Dmaven.test.failure.ignore=true test
-          ls -la
-          cd target
-
-      - name: list
-        run: |
-          ls -a
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v1
@@ -77,10 +71,10 @@ jobs:
           key: setup-java-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: setup-java-${{ runner.os }}-maven
 
-      - name: Build with no Test
-        run: |
-          mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
-          mvn dependency:copy-dependencies
+      # - name: Build with no Test
+      #   run: |
+      #     mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
+      #     mvn dependency:copy-dependencies
 
       - name: Download OWASP Dependency Check
         run: |
