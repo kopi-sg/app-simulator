@@ -63,6 +63,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache the Maven packages to speed up build
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+
       - name: Build with no Test
         run: |
           mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
