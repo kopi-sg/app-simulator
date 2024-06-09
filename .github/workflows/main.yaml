@@ -6,16 +6,8 @@ on:
       - dev/**
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: test
-        run: |
-          echo "hello 11"
-
   maven-main:
     uses: kopi-sg/dso-workflow/.github/workflows/app-maven-release.yaml@main
     with:
-      os_version: "ubuntu-latest"
+      os_version: "ubuntu-24.04"
     secrets: inherit
-    needs: test
