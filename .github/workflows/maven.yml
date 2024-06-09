@@ -36,6 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@v4
+
       - name: Cache the Maven packages to speed up build
         uses: actions/cache@v2
         with:
