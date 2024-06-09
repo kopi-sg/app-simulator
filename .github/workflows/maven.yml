@@ -149,7 +149,3 @@ jobs:
         with:
           push: true
           tags: weihan1394/simulator:${{ env.DATE }}, weihan1394/simulator:latest
-
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
