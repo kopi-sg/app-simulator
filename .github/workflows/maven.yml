@@ -146,3 +146,12 @@ jobs:
         with:
           push: true
           tags: weihan1394/simulator:${{ env.DATE }}, weihan1394/simulator:latest
+
+  deploy-dev:
+    runs-on: "ubuntu-latest"
+    environment: "dev"
+    needs: publish_job
+    steps:
+      - name: deploy
+        run: |
+          echo "deploying dev..."
