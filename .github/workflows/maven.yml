@@ -11,7 +11,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     outputs:
-      variable_1: ${{steps.build.outputs.variable_1}}
+      var1: ${{steps.build.outputs.var1}}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,7 +25,7 @@ jobs:
       - name: Build
         id: build
         run: |
-          echo "variable_1=variable1-1-output" >> $$GITHUB_OUTPUT
+          echo "var1=testing" >> $$GITHUB_OUTPUT
           mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
 
   test:
@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Print
         run: |
-          echo "build::: ${{needs.build.outputs.variable_1}}"
+          echo "build::: ${{needs.build.outputs.var1}}"
       - uses: actions/checkout@v4
       - name: Cache the Maven packages to speed up build
         uses: actions/cache@v4
@@ -66,7 +66,7 @@ jobs:
     name: Scan
     runs-on: ubuntu-latest
     needs: [build, test]
-
+    if: startsWith(github.ref, 'refs/heads/dev/')
     steps:
       - uses: actions/checkout@v4
 
