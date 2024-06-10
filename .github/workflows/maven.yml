@@ -22,7 +22,9 @@ jobs:
           cache: maven
 
       - name: Build
-        run: mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
+        run: |
+          echo ${github.ref}
+          mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
 
   test:
     name: Test
