@@ -22,7 +22,9 @@ jobs:
           cache: maven
 
       - name: Build
-        run: mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
+        run: |
+          echo ${github.ref}
+          mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
 
   test:
     name: Test
@@ -148,7 +150,7 @@ jobs:
 
   deploy_dev:
     runs-on: "ubuntu-latest"
-    if: github.ref_name == 'dev/**'
+    if: startsWith(github.ref, 'refs/heads/dev/')
     environment: "dev"
     needs: [publish_job, dockerize]
     steps:
@@ -158,7 +160,7 @@ jobs:
 
   deploy_qa:
     runs-on: "ubuntu-latest"
-    if: github.ref == 'main'
+    if: github.ref == 'refs/heads/main'
     environment: "qa"
     needs: [publish_job, dockerize]
     steps:
@@ -168,6 +170,7 @@ jobs:
 
   deploy_prd:
     runs-on: "ubuntu-latest"
+    if: github.ref == 'refs/heads/main'
     environment: "prd"
     needs: deploy_qa
     steps:
