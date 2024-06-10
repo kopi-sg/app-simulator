@@ -148,7 +148,7 @@ jobs:
 
   deploy_dev:
     runs-on: "ubuntu-latest"
-    if: github.ref_name == 'dev/**'
+    if: startsWith(github.ref, 'refs/heads/dev/')
     environment: "dev"
     needs: [publish_job, dockerize]
     steps:
