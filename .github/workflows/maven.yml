@@ -25,7 +25,7 @@ jobs:
       - name: Build
         id: build
         run: |
-          echo "variable_1=variable1-1-output"
+          echo "variable_1=variable1-1-output" >> $$GITHUB_OUTPUT
           mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
 
   test:
