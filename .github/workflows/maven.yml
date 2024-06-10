@@ -10,7 +10,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-
+    outputs:
+      variable_1: ${{steps.build.outputs.variable_1}}
     steps:
       - uses: actions/checkout@v4
 
@@ -22,19 +23,21 @@ jobs:
           cache: maven
 
       - name: Build
+        id: build
         run: |
-          echo "branch name: ${{github.ref}}"
+          echo "variable_1=variable1-1-output"
           mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
 
   test:
     name: Test
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/heads/dev/')
     needs: build
     permissions: write-all
     steps:
+      - name: Print
+        run: |
+          echo "build::: ${{needs.build.outputs.variable_1}}"
       - uses: actions/checkout@v4
-
       - name: Cache the Maven packages to speed up build
         uses: actions/cache@v4
         with:
@@ -149,7 +152,7 @@ jobs:
           push: true
           tags: weihan1394/simulator:${{ env.DATE }}, weihan1394/simulator:latest
 
-  deploy_dev:
+  promote_dev:
     runs-on: "ubuntu-latest"
     if: startsWith(github.ref, 'refs/heads/dev/')
     environment: "dev"
@@ -159,7 +162,7 @@ jobs:
         run: |
           echo "deploying dev..."
 
-  deploy_qa:
+  promote_qa:
     runs-on: "ubuntu-latest"
     if: github.ref == 'refs/heads/main'
     environment: "qa"
@@ -169,11 +172,11 @@ jobs:
         run: |
           echo "deploying qa..."
 
-  deploy_prd:
+  promote_prd:
     runs-on: "ubuntu-latest"
     if: github.ref == 'refs/heads/main'
     environment: "prd"
-    needs: deploy_qa
+    needs: promote_qa
     steps:
       - name: deploy
         run: |
