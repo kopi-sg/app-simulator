@@ -2,9 +2,9 @@ name: Build and Test
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - main
+      - dev/*
 
 jobs:
   build:
@@ -148,6 +148,7 @@ jobs:
 
   deploy_dev:
     runs-on: "ubuntu-latest"
+    if: github.ref_name == 'dev/**'
     environment: "dev"
     needs: [publish_job, dockerize]
     steps:
@@ -157,8 +158,9 @@ jobs:
 
   deploy_qa:
     runs-on: "ubuntu-latest"
+    if: github.ref == 'main'
     environment: "qa"
-    needs: deploy_dev
+    needs: [publish_job, dockerize]
     steps:
       - name: deploy
         run: |
