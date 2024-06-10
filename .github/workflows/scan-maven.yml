@@ -1,0 +1,47 @@
+name: scan-maven workflow
+on:
+  workflow_call:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "datetime=$(/bin/date -u "+%Y%m%d%H")" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Restore cached Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          # Using datetime in cache key as OWASP database may change, without the pom changing
+          key: ${{ runner.os }}-maven-${{ steps.get-date.outputs.datetime }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ steps.get-date.outputs.datetime }}
+            ${{ runner.os }}-maven-
+
+      # - name: Build with no Test
+      #   run: |
+      #     mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
+      #     mvn dependency:copy-dependencies
+
+      - name: Download OWASP Dependency Check
+        run: |
+          VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
+          curl -sL "https://github.com/jeremylong/DependencyCheck/releases/download/v$VERSION/dependency-check-$VERSION-release.zip" --output dependency-check.zip
+          unzip dependency-check.zip
+
+      - name: Run Dependency Check
+        run: |
+          mkdir dependency-check-result
+          ./dependency-check/bin/dependency-check.sh --project "${{ github.event.repository.name }}" --nvdApiKey ${{ secrets.NVD_API_KEY }} --scan . --format ALL -l odc.log  --out dependency-check-result/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Dependency Check Result
+          path: dependency-check-result/
