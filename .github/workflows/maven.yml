@@ -150,7 +150,7 @@ jobs:
   deploy_dev:
     runs-on: "ubuntu-latest"
     environment: "dev"
-    needs: publish_job
+    needs: [publish_job, dockerize]
     steps:
       - name: deploy
         run: |
@@ -158,7 +158,7 @@ jobs:
 
   deploy_qa:
     runs-on: "ubuntu-latest"
-    environment: "dev"
+    environment: "qa"
     needs: deploy_dev
     steps:
       - name: deploy
@@ -167,7 +167,7 @@ jobs:
 
   deploy_prd:
     runs-on: "ubuntu-latest"
-    environment: "dev"
+    environment: "prd"
     needs: deploy_qa
     steps:
       - name: deploy
