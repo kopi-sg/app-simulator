@@ -1,10 +1,16 @@
 name: scan-maven workflow
 on:
   workflow_call:
+    inputs:
+      os_version:
+        description: "pipeline operating system"
+        type: string
+        default: "ubuntu-24.04"
+        required: true
 
 jobs:
   scan:
-    runs-on: ubuntu-latest
+    runs-on: ${{inputs.os_version}}
     steps:
       - uses: actions/checkout@v4
 
