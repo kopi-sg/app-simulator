@@ -23,7 +23,7 @@ jobs:
 
       - name: Build
         run: |
-          echo ${github.ref}
+          echo "branch name: ${github.ref}"
           mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
 
   test:
