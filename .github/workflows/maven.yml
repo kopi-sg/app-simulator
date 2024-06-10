@@ -82,7 +82,9 @@ jobs:
 
   scan:
     uses: ./.github/workflows/scan-maven.yml
+    needs: [build, test]
     secrets: inherit
+
   # scan:
   #   name: Scan
   #   runs-on: ubuntu-latest
