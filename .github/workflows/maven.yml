@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       var1: ${{steps.build.outputs.var1}}
+    needs: setup
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 11
@@ -35,6 +36,9 @@ jobs:
         run: |
           echo "var1=testing" >> $GITHUB_OUTPUT
           mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
+          mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnextSnapshot=true # hardcoded plugin 2.7 
+          INC_VERSION=$(mvn help:evaluate -Dexpression=project.version | grep -v '\[.*') && echo $INC_VERSION
+          echo "${INC_VERSION}"
 
   test:
     name: Test
