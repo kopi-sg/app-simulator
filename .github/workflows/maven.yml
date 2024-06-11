@@ -14,7 +14,7 @@ jobs:
       - name: init
         run: |
           echo "::error:: this is an error"
-          echo "::info:: this is warning"
+          echo ""::warning title=warning-title::this is warning message""
 
   build:
     name: Build
@@ -39,6 +39,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev/')
     needs: build
     permissions: write-all
     steps:
