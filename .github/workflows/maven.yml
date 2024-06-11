@@ -30,6 +30,12 @@ jobs:
           java-version: 11
           distribution: "corretto"
           cache: maven
+      - name: Cache the Maven packages to speed up build
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: setup-java-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: setup-java-${{ runner.os }}-maven
 
       - name: Build
         id: build
@@ -39,6 +45,7 @@ jobs:
           mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnextSnapshot=true # hardcoded plugin 2.7 
           INC_VERSION=$(mvn help:evaluate -Dexpression=project.version | grep -v '\[.*') && echo $INC_VERSION
           echo "${INC_VERSION}"
+          echo "done"
 
   test:
     name: Test
