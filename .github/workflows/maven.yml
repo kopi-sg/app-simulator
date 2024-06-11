@@ -42,7 +42,10 @@ jobs:
         run: |
           echo "var1=testing" >> $GITHUB_OUTPUT
           mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
-          mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnextSnapshot=true # hardcoded plugin 2.7 
+          mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnextSnapshot=true # hardcoded plugin 2.7
+
+      - name: Test
+        run: |
           INC_VERSION=$(mvn help:evaluate -Dexpression=project.version | grep -v '\[.*') && echo $INC_VERSION
           echo "${INC_VERSION}"
           echo "done"
