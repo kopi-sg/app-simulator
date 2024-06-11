@@ -47,7 +47,7 @@ jobs:
         run: |
           mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnextSnapshot=true # hardcoded plugin 2.7
           INC_VERSION=$(mvn help:evaluate -Dexpression=project.version | grep -v '\[.*') && echo $INC_VERSION
-          echo "version=${INC_VERSION}" >> $GITHUB_ENV
+          # echo "version=${INC_VERSION}" >> $GITHUB_ENV
           echo "name=test" >> $GITHUB_ENV
           echo "done"
       - name: Output
