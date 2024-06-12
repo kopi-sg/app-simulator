@@ -58,7 +58,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-22.04
-    if: startsWith(github.ref, 'refs/heads/dev/')
     needs: build
     permissions: write-all
     steps:
