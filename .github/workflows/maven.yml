@@ -47,6 +47,7 @@ jobs:
         run: |
           ls -al
           pwd
+          ls -al ./.github/workflows/script/
           chmod +x ./.github/workflows/script/bump-version.sh
           sh ./.github/workflows/script/bump-version.sh
           cat pom.xml
