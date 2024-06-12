@@ -47,8 +47,8 @@ jobs:
         run: |
           ls -al
           pwd
-          cat pom.xml
-          # echo "$INC_VERSION"
+          chmod +x ./.github/workflows/script/bump-version.sh
+          sh ./.github/workflows/script/bump-version.sh
           echo "name=test" >> $GITHUB_ENV
 
       - name: Output
