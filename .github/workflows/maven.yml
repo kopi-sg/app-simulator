@@ -22,6 +22,10 @@ jobs:
     outputs:
       var1: ${{steps.build.outputs.var1}}
     needs: setup
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 11
@@ -68,6 +72,7 @@ jobs:
 
           # Set the new version
           mvn org.codehaus.mojo:versions-maven-plugin:2.16.2:set -DnewVersion=$new_version
+          curl --request PUT --header "PRIVATE-TOKEN: ${{ github.token }}" -F "branch=main" -F "author_email=${{github.actor_id}}" -F "author_name=${{github.actor}}" -F "content=<pom.xml" -F "commit_message=bt github-bump [ci skip]"
           echo "name=test" >> $GITHUB_ENV
 
       - name: Output
