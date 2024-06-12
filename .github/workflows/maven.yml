@@ -140,7 +140,7 @@ jobs:
   publish_job:
     name: Publish Job
     runs-on: ubuntu-22.04
-    needs: [scan]
+    needs: [test]
 
     steps:
       - uses: actions/checkout@v4
@@ -158,7 +158,7 @@ jobs:
   dockerize:
     name: Dockerize
     runs-on: ubuntu-22.04
-    needs: [scan]
+    needs: [test]
 
     steps:
       - name: Set up QEMU
