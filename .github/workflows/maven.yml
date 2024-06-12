@@ -47,7 +47,6 @@ jobs:
         run: |
           ls -al
           pwd
-          cd ./.github/workflows/script
           ls
           echo "${GITHUB_WORKSPACE}"
           chmod +x "./.github/workflows/script/bump-version.sh"
