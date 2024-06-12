@@ -49,13 +49,10 @@ jobs:
 
       - name: Test
         run: |
-          ls -al
-          pwd
-          ls
-          # echo "${GITHUB_WORKSPACE}"
-          # chmod +x "./.github/workflows/script/bump-version.sh"
-          # sh ./.github/workflows/script/bump-version.sh
-          # cat pom.xml
+          ### 1. Get the sha of the file
+          sha_value=$(curl -s -H "Authorization: token ${{ github.token }}" https://api.github.com/repos/kopi-sg/app-simulator/contents/pom.xml | jq -r '.content.sha')
+
+          ### 2. Bump up the version
           # Get the current version from the pom.xml
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "Current version: $current_version"
@@ -70,10 +67,13 @@ jobs:
 
           echo "New version: $new_version"
 
-          # Set the new version
+          ### Set the new version
           mvn org.codehaus.mojo:versions-maven-plugin:2.16.2:set -DnewVersion=$new_version
-          curl --request PUT --header "PRIVATE-TOKEN: ${{ github.token }}" -F "branch=main" -F "author_email=${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com" -F "author_name=${{github.actor}}" -F "content=<pom.xml" -F "commit_message=bt github-bump [ci skip]" "https://api.github.com/repos/kopi-sg/contents/pom.xml"
-          echo "name=test" >> $GITHUB_ENV
+
+          # 3. Commit the change
+
+          # curl --request PUT --header "PRIVATE-TOKEN: ${{ github.token }}" -F "branch=main" -F "author_email=${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com" -F "author_name=${{github.actor}}" -F "content=<pom.xml" -F "commit_message=bt github-bump [ci skip]" "https://api.github.com/repos/kopi-sg/contents/pom.xml"
+          # echo "name=test" >> $GITHUB_ENV
 
       - name: Output
         run: |
