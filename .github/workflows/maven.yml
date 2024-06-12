@@ -47,9 +47,10 @@ jobs:
         run: |
           ls -al
           pwd
-          ls -al ./.github/workflows/script/
-          chmod +x ./.github/workflows/script/bump-version.sh
-          sh ./.github/workflows/script/bump-version.sh
+          cd ./.github/workflows/script
+          ls -al
+          chmod +x bump-version.sh
+          sh bump-version.sh
           cat pom.xml
           echo "name=test" >> $GITHUB_ENV
 
