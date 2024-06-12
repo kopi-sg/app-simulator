@@ -98,7 +98,7 @@ jobs:
   release:
     name: Release new version
     runs-on: ubuntu-22.04
-    needs: [test]
+    needs: [scan]
     steps:
       - uses: actions/checkout@v4
       - name: Cache the Maven packages to speed up build
@@ -140,7 +140,7 @@ jobs:
   publish_job:
     name: Publish Job
     runs-on: ubuntu-22.04
-    needs: [test]
+    needs: [scan]
 
     steps:
       - uses: actions/checkout@v4
@@ -158,7 +158,7 @@ jobs:
   dockerize:
     name: Dockerize
     runs-on: ubuntu-22.04
-    needs: [test]
+    needs: [scan]
 
     steps:
       - name: Set up QEMU
