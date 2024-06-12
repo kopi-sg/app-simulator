@@ -9,7 +9,7 @@ on:
 jobs:
   setup:
     name: Setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: init
         run: |
@@ -18,7 +18,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       var1: ${{steps.build.outputs.var1}}
     needs: setup
@@ -49,42 +49,15 @@ jobs:
 
       - name: Test
         run: |
-          ### 1. Get the sha of the file
-          sha_value=$(curl -s -H "Authorization: token ${{ github.token }}" https://api.github.com/repos/kopi-sg/app-simulator/contents/pom.xml | jq -r '.sha')
-          echo "$sha_value"
-
-          ### 2. Bump up the version
-          # Get the current version from the pom.xml
-          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "Current version: $current_version"
-
-          # Parse the current version and increment the patch number
-          IFS='.' read -r -a version_parts <<< "$current_version"
-          major=${version_parts[0]}
-          minor=${version_parts[1]}
-          patch=${version_parts[2]}
-          new_patch=$((patch + 1))
-          new_version="$major.$minor.$new_patch"
-
-          echo "New version: $new_version"
-
-          ### Set the new version
-          mvn org.codehaus.mojo:versions-maven-plugin:2.16.2:set -DnewVersion=$new_version
-
-          # 3. Commit the change
-          file_content=$(base64 < "pom.xml" | tr -d '\n')
-          curl -X PUT -H "Authorization: token ${{github.token}}"  -H "Content-Type: application/json" "https://api.github.com/repos/kopi-sg/app-simulator/contents/pom.xml" -d '{"message":"bt github-bump [ci skip]","sha":"'"$sha_value"'","committer":{"name":"${{github.actor}}","email":"'${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com'"},"content":"'"$file_content"'"}' -v --trace-ascii -
-
-          # curl --request PUT --header "PRIVATE-TOKEN: ${{ github.token }}" -F "branch=main" -F "author_email=${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com" -F "author_name=${{github.actor}}" -F "content=<pom.xml" -F "commit_message=bt github-bump [ci skip]" "https://api.github.com/repos/kopi-sg/contents/pom.xml"
-          # echo "name=test" >> $GITHUB_ENV
 
       - name: Output
         run: |
           echo "$name"
           echo "$version"
+
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: startsWith(github.ref, 'refs/heads/dev/')
     needs: build
     permissions: write-all
@@ -124,54 +97,43 @@ jobs:
     with:
       os_version: "ubuntu-24.04"
 
-  # scan:
-  #   name: Scan
-  #   runs-on: ubuntu-latest
-  #   needs: [build, test]
-  #   steps:
-  #     - uses: actions/checkout@v4
+  release:
+    name: Release new version
+    runs-on: ubuntu-22.04
+    needs: [scan]
+    steps:
+      - name: increment version
+        run: |
+          ### 1. Get the sha of the file
+          sha_value=$(curl -s -H "Authorization: token ${{ github.token }}" https://api.github.com/repos/kopi-sg/app-simulator/contents/pom.xml | jq -r '.sha')
+          echo "$sha_value"
 
-  #     - name: Get Date
-  #       id: get-date
-  #       run: |
-  #         echo "datetime=$(/bin/date -u "+%Y%m%d%H")" >> $GITHUB_OUTPUT
-  #       shell: bash
+          ### 2. Bump up the version
+          # Get the current version from the pom.xml
+          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "Current version: $current_version"
 
-  #     - name: Restore cached Maven dependencies
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: ~/.m2/repository
-  #         # Using datetime in cache key as OWASP database may change, without the pom changing
-  #         key: ${{ runner.os }}-maven-${{ steps.get-date.outputs.datetime }}-${{ hashFiles('**/pom.xml') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-maven-${{ steps.get-date.outputs.datetime }}
-  #           ${{ runner.os }}-maven-
+          # Parse the current version and increment the patch number
+          IFS='.' read -r -a version_parts <<< "$current_version"
+          major=${version_parts[0]}
+          minor=${version_parts[1]}
+          patch=${version_parts[2]}
+          new_patch=$((patch + 1))
+          new_version="$major.$minor.$new_patch"
 
-  #     # - name: Build with no Test
-  #     #   run: |
-  #     #     mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
-  #     #     mvn dependency:copy-dependencies
+          echo "New version: $new_version"
 
-  #     - name: Download OWASP Dependency Check
-  #       run: |
-  #         VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
-  #         curl -sL "https://github.com/jeremylong/DependencyCheck/releases/download/v$VERSION/dependency-check-$VERSION-release.zip" --output dependency-check.zip
-  #         unzip dependency-check.zip
+          ### Set the new version
+          mvn org.codehaus.mojo:versions-maven-plugin:2.16.2:set -DnewVersion=$new_version
 
-  #     - name: Run Dependency Check
-  #       run: |
-  #         mkdir dependency-check-result
-  #         ./dependency-check/bin/dependency-check.sh --project "${{ github.event.repository.name }}" --nvdApiKey ${{ secrets.NVD_API_KEY }} --scan . --format ALL -l odc.log  --out dependency-check-result/
-
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: Dependency Check Result
-  #         path: dependency-check-result/
+          # 3. Commit the change
+          file_content=$(base64 < "pom.xml" | tr -d '\n')
+          # TODO: check curl result
+          curl -X PUT -H "Authorization: token ${{github.token}}"  -H "Content-Type: application/json" "https://api.github.com/repos/kopi-sg/app-simulator/contents/pom.xml" -d '{"message":"bt github-bump [ci skip]","sha":"'"$sha_value"'","committer":{"name":"${{github.actor}}","email":"'${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com'"},"content":"'"$file_content"'"}' -v --trace-ascii -
 
   publish_job:
     name: Publish Job
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [scan]
 
     steps:
@@ -189,7 +151,7 @@ jobs:
   # https://github.com/docker/build-push-action
   dockerize:
     name: Dockerize
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [scan]
 
     steps:
@@ -214,7 +176,7 @@ jobs:
           tags: weihan1394/simulator:${{ env.DATE }}, weihan1394/simulator:latest
 
   promote_dev:
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-22.04"
     if: startsWith(github.ref, 'refs/heads/dev/')
     environment: "dev"
     needs: [publish_job, dockerize]
@@ -224,7 +186,7 @@ jobs:
           echo "deploying dev..."
 
   promote_qa:
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-22.04"
     if: github.ref == 'refs/heads/main'
     environment: "qa"
     needs: [publish_job, dockerize]
@@ -234,7 +196,7 @@ jobs:
           echo "deploying qa..."
 
   promote_prd:
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-22.04"
     if: github.ref == 'refs/heads/main'
     environment: "prd"
     needs: promote_qa
