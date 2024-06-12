@@ -17,8 +17,8 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.x
-          cache: true
+          dotnet-version: "6.0.x"
+          dotnet-quality: "preview"
 
       - name: Get Date
         id: get-date
