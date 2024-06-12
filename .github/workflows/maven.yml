@@ -23,8 +23,6 @@ jobs:
       var1: ${{steps.build.outputs.var1}}
     needs: setup
     permissions:
-      # Give the default GITHUB_TOKEN write permission to commit and push the
-      # added or changed files to the repository.
       contents: write
     steps:
       - uses: actions/checkout@v4
@@ -47,13 +45,13 @@ jobs:
           echo "var1=testing" >> $GITHUB_OUTPUT
           mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
 
-      - name: Test
+      - name: Pass variable
         run: |
+          echo "name=test" >> $GITHUB_ENV
 
-      - name: Output
+      - name: Read variable
         run: |
           echo "$name"
-          echo "$version"
 
   test:
     name: Test
