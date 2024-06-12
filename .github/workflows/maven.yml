@@ -49,6 +49,7 @@ jobs:
           pwd
           chmod +x ./.github/workflows/script/bump-version.sh
           sh ./.github/workflows/script/bump-version.sh
+          cat pom.xml
           echo "name=test" >> $GITHUB_ENV
 
       - name: Output
