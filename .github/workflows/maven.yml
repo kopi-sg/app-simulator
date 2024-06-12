@@ -45,17 +45,16 @@ jobs:
 
       - name: Test
         run: |
-          mvn org.codehaus.mojo:versions-maven-plugin:2.16.2:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}
-          INC_VERSION=$(mvn help:evaluate -Dexpression=project.version | grep -v '\[.*') && echo $INC_VERSION
           ls -al
+          pwd
           cat pom.xml
           # echo "$INC_VERSION"
           echo "name=test" >> $GITHUB_ENV
-          echo "done"
+
       - name: Output
         run: |
-          echo "$version"
           echo "$name"
+          echo "$version"
   test:
     name: Test
     runs-on: ubuntu-latest
