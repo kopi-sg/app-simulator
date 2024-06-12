@@ -10,6 +10,7 @@ on:
 
 jobs:
   scan:
+    name: owasp-dependency-check
     runs-on: ${{inputs.os_version}}
     steps:
       - uses: actions/checkout@v4
