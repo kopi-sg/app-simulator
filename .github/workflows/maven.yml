@@ -111,7 +111,7 @@ jobs:
       - name: increment version
         run: |
           ### 1. Get the sha of the file
-          sha_value=$(curl -s -H "Authorization: token ${{ github.token }}" https://api.github.com/repos/kopi-sg/app-simulator/contents/pom.xml | jq -r '.sha')
+          sha_value=$(curl -s -H "Authorization: token ${{ github.token }}" ${{github.api_url}}/repos/${{github.repository}}/contents/pom.xml | jq -r '.sha')
           echo "$sha_value"
 
           ### 2. Bump up the version
