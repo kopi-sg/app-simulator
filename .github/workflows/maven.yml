@@ -16,13 +16,20 @@ jobs:
           echo "::error:: this is an error"
           echo ""::warning title=warning-title::this is warning message""
       - run: |
+          # TODO: get app information
           mkdir test
           echo "hello" > ./test/world.txt
-
       - uses: actions/upload-artifact@v4
         with:
           name: artifact-test
           path: ./test
+      - name: Pass variable
+        run: |
+          echo "name=test" >> $GITHUB_ENV
+      - name: Read variable
+        run: |
+          echo "$name"
+
 
   build:
     name: Build
@@ -46,28 +53,17 @@ jobs:
         with:
           java-version: 11
           distribution: "corretto"
-          cache: maven
       - name: Cache the Maven packages to speed up build
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: setup-java-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: setup-java-${{ runner.os }}-maven
-
       - name: Build
         id: build
         run: |
           echo "var1=testing" >> $GITHUB_OUTPUT
           mvn -Dmaven.test.skip=true -Ddependency-check.skip=true install
-
-      - name: Pass variable
-        run: |
-          echo "name=test" >> $GITHUB_ENV
-
-      - name: Read variable
-        run: |
-          echo "$name"
-
   test:
     name: Test
     runs-on: ubuntu-22.04
