@@ -15,7 +15,7 @@ jobs:
         run: |
           echo "::error:: this is an error"
           echo ""::warning title=warning-title::this is warning message""
-          - run: echo hello > ./test/world.txt
+      - run: echo hello > ./test/world.txt
 
       - uses: actions/upload-artifact@v4
         with:
