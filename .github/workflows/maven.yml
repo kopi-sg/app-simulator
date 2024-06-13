@@ -15,6 +15,12 @@ jobs:
         run: |
           echo "::error:: this is an error"
           echo ""::warning title=warning-title::this is warning message""
+          - run: echo hello > ./test/world.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifact-test
+          path: ./test
 
   build:
     name: Build
@@ -25,6 +31,13 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifact-test
+          path: ./test
+      - run: |
+          ls -al
+          cat ./test/world.txt
       - uses: actions/checkout@v4
       - name: Set up JDK 11
         uses: actions/setup-java@v4
