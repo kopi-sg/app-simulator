@@ -146,7 +146,7 @@ jobs:
           # 3. Commit the change
           file_content=$(base64 < "pom.xml" | tr -d '\n')
           # TODO: check curl result
-          curl -X PUT -H "Authorization: token ${{github.token}}"  -H "Content-Type: application/json" "https://api.github.com/repos/kopi-sg/app-simulator/contents/pom.xml" -d '{"message":"bt github-bump [ci skip]","sha":"'"$sha_value"'","committer":{"name":"${{github.actor}}","email":"'${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com'"},"content":"'"$file_content"'"}' -v --trace-ascii -
+          curl -X PUT -H "Authorization: token ${{github.token}}"  -H "Content-Type: application/json" "${{github.api_url}}/repos/${{github.repository}}/contents/pom.xml" -d '{"message":"bt github-bump [ci skip]","sha":"'"$sha_value"'","committer":{"name":"${{github.actor}}","email":"'${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com'"},"content":"'"$file_content"'"}' -v --trace-ascii -
 
   publish_job:
     name: Publish Job
