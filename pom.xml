@@ -12,11 +12,7 @@
 
     <groupId>speed</groupId>
     <artifactId>simulator</artifactId>
-<<<<<<< Updated upstream
-    <version>1.0.14</version>
-=======
     <version>1.0.14-SNAPSHOT</version>
->>>>>>> Stashed changes
 
     <build>
         <plugins>
