@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import tehpeng.simulator.model.Car;
+import tehpeng.simulator.model.Collision;
 
 public class CarService {
 
@@ -13,14 +14,17 @@ public class CarService {
   private int inputBoundaryX;
   private int inputBoundaryY;
   private int currCommandIndex;
+  private List<Collision> lsCollision;
 
-  public CarService(HashMap<String, Car> lsCarMap, int inputBoundaryX, int inputBoundaryY) {
+  public CarService(HashMap<String, Car> lsCarMap, int inputBoundaryX, int inputBoundaryY,
+      List<Collision> lsCollision) {
     this.lsCarMap = lsCarMap;
     this.inputBoundaryX = inputBoundaryX;
     this.inputBoundaryY = inputBoundaryY;
+    this.lsCollision = lsCollision;
   }
 
-  private void validateCollision(HashMap<String, List<String>> coordinateMap) {
+  private void validateCollision(HashMap<String, List<String>> coordinateMap, List<Collision> lsCollision) {
     // coordinateMap to see if there is any coordinate that have more than one car
     for (String key : coordinateMap.keySet()) {
       List<String> lsCarCollided = coordinateMap.get(key);
@@ -34,16 +38,26 @@ public class CarService {
         for (String carCollidedName : lsCarCollided) {
           Car currCarCollided = lsCarMap.get(carCollidedName);
 
-          if (currCarCollided.getCollideWith().size() == 0) {
-            // initalize a new list
-            List<String> lsCurrCarCollided = new ArrayList<>();
-            lsCurrCarCollided.addAll(lsCarCollided);
-            lsCurrCarCollided.remove(currCarCollided.getName()); // remove current car
-            currCarCollided.setCollideWith(lsCurrCarCollided);
+          if (currCarCollided.getCollided() == false) {
+            List<String> lsCarCollidedRemoveMe = new ArrayList<>(lsCarCollided);
+            lsCarCollidedRemoveMe.remove(currCarCollided.getName());
+            Collision collision = new Collision(currCarCollided.getName(), currCommandIndex,
+                lsCarCollidedRemoveMe, currCarCollided.getCurrCoordinate());
 
-            // collided; means the car wont move anymore
-            currCarCollided.setCompleted();
+            lsCollision.add(collision);
+            currCarCollided.setCollided();
           }
+
+          // if (currCarCollided.getCollideWith().size() == 0) {
+          // // initalize a new list
+          // List<String> lsCurrCarCollided = new ArrayList<>();
+          // lsCurrCarCollided.addAll(lsCarCollided);
+          // lsCurrCarCollided.remove(currCarCollided.getName()); // remove current car
+          // currCarCollided.setCollideWith(lsCurrCarCollided);
+
+          // // collided; means the car wont move anymore
+          // currCarCollided.setCompleted();
+          // }
         }
       }
     }
@@ -53,7 +67,7 @@ public class CarService {
     // check if all the cars collided or command ended
     for (String key : lsCarMap.keySet()) {
       Car car = lsCarMap.get(key);
-      if (!car.getCompleted()) {
+      if (!car.getCompleted() && !car.getCollided()) {
         return true;
       }
     }
@@ -67,7 +81,7 @@ public class CarService {
     for (String key : lsCarMap.keySet()) {
       Car car = lsCarMap.get(key);
       // car not collided, car still have command, car not yet completed
-      if ((car.getCollideWith().size() == 0) && (car.getCurrCommand() < car.getCommands().size())
+      if ((car.getCollided() == false) && (car.getCurrCommand() < car.getCommands().size())
           && (car.getCompleted() == false)) {
         // set current command
         car.setCurrCommand(this.currCommandIndex);
@@ -97,8 +111,9 @@ public class CarService {
         indexList.add(car.getName());
       }
     }
-
-    validateCollision(coordinateMap);
+    if (lsCarMap.size() > 1) {
+      validateCollision(coordinateMap, lsCollision);
+    }
     currCommandIndex++;
   }
 

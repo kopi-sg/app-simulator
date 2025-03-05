@@ -3,10 +3,14 @@ package tehpeng.simulator.service;
 import java.util.*;
 
 import tehpeng.simulator.model.Car;
+import tehpeng.simulator.model.Collision;
 import tehpeng.simulator.util.CommonUtil;
 import tehpeng.simulator.util.MapUtil;
 
 public class SimulationService {
+
+  private List<Collision> lsCollision;
+
   public void runStartScreen() {
     System.out.println("Welcome to Auto Driving Car Simulation!");
   }
@@ -140,10 +144,11 @@ public class SimulationService {
   }
 
   public boolean runSimulation(HashMap<String, Car> lsCarMap, int inputBoundaryX, int inputBoundaryY) {
+    lsCollision = new ArrayList<>();
     runNewScreen();
 
     if (lsCarMap.size() > 0) {
-      CarService carSimulation = new CarService(lsCarMap, inputBoundaryX, inputBoundaryY);
+      CarService carSimulation = new CarService(lsCarMap, inputBoundaryX, inputBoundaryY, lsCollision);
       // start simulation
       while (carSimulation.hasNextStep()) {
         // move car
@@ -208,18 +213,39 @@ public class SimulationService {
   private void runDisplayCarDetailsScreenAfterSimulation(HashMap<String, Car> lsCarMap) {
     System.out.println("After simulation, the result is:");
 
-    for (String key : lsCarMap.keySet()) {
-      Car car = lsCarMap.get(key);
-
-      if (car.getCollideWith().size() == 0) {
-        System.out.println("- " + car.getName() + ", (" + car.getCurrCoordinate()[1] + "," +
-            car.getCurrCoordinate()[0] + ") " + MapUtil.convertIndexToDirection(car.getCurrDirection()));
-      } else {
-        System.out.println("- " + car.getName() + ", collides with " + String.join(", ", car.getCollideWith())
-            + " at (" + car.getCurrCoordinate()[1] + "," + car.getCurrCoordinate()[0] + ") at step "
-            + (car.getCurrCommand() + 1));
+    if (lsCollision.size() > 0) {
+      // display collision
+      for (Collision collision : lsCollision) {
+        System.out.println(
+            "- " + collision.getCurrentCar() + ", collides with " + String.join(", ", collision.getCollidedCar())
+                + " at (" + collision.getCoordinate()[1] + "," + collision.getCoordinate()[0] + ") at step "
+                + collision.getStep());
       }
     }
+
+    for (Car car : lsCarMap.values()) {
+      if (!car.getCollided()) {
+        System.out.println("- " + car.getName() + ", (" + car.getCurrCoordinate()[1] + "," +
+            car.getCurrCoordinate()[0] + ") " + MapUtil.convertIndexToDirection(car.getCurrDirection()));
+      }
+    }
+
+    // for (String key : lsCarMap.keySet()) {
+    // Car car = lsCarMap.get(key);
+
+    // if (car.getCollideWith().size() == 0) {
+    // System.out.println("- " + car.getName() + ", (" + car.getCurrCoordinate()[1]
+    // + "," +
+    // car.getCurrCoordinate()[0] + ") " +
+    // MapUtil.convertIndexToDirection(car.getCurrDirection()));
+    // } else {
+    // System.out.println("- " + car.getName() + ", collides with " + String.join(",
+    // ", car.getCollideWith())
+    // + " at (" + car.getCurrCoordinate()[1] + "," + car.getCurrCoordinate()[0] +
+    // ") at step "
+    // + (car.getCurrCommand() + 1));
+    // }
+    // }
   }
 
   private void runNewScreen() {

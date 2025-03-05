@@ -20,6 +20,7 @@ public class Car {
 
   // result
   private List<String> collideWith;
+  private boolean collided;
   private boolean completed;
 
   // Constructor
@@ -37,6 +38,7 @@ public class Car {
     this.currDirection = direction;
     this.currCommand = 0;
     this.collideWith = new ArrayList<>();
+    this.collided = false;
     this.completed = false;
   }
 
@@ -94,6 +96,14 @@ public class Car {
 
   public void setCollideWith(List<String> collisionWith) {
     this.collideWith = collisionWith;
+  }
+
+  public void setCollided() {
+    this.collided = true;
+  }
+
+  public boolean getCollided() {
+    return collided;
   }
 
   public void plusCurrCoordinateY(int maxY) {
