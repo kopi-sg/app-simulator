@@ -123,7 +123,7 @@
         <dependency>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>9.0.10</version>
+            <version>9.2.0</version>
             <type>maven-plugin</type>
         </dependency>
     </dependencies>
